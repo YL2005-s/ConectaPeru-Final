@@ -1,4 +1,4 @@
-package controller;
+package controller.auth;
 
 import config.Session;
 import core.Controller;

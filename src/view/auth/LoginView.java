@@ -1,13 +1,11 @@
 package view.auth;
 
-import controller.LoginController;
+import controller.auth.LoginController;
 import utils.ImageUtils;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class LoginView extends JPanel {
     private final LoginController loginController;

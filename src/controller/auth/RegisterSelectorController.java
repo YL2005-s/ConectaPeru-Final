@@ -1,4 +1,4 @@
-package controller;
+package controller.auth;
 
 import core.Controller;
 import view.auth.RegisterSelectorView;

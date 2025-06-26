@@ -11,8 +11,8 @@ public abstract class Controller {
     protected static final JPanel viewsPanel = new JPanel(new CardLayout());
     protected static final JPanel layoutWrapper = new JPanel(new BorderLayout());
 
-    protected static SidebarComponent sidebarComponent;
-    protected static NavbarComponent navbarComponent;
+    protected static SidebarComponent sidebarComponent = new SidebarComponent();
+    protected static NavbarComponent navbarComponent = new NavbarComponent();
 
     static {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,4 +34,26 @@ public abstract class Controller {
         CardLayout cl = (CardLayout) viewsPanel.getLayout();
         cl.show(viewsPanel, viewName);
     }
+
+    public static void showLayoutWithNav(String viewName) {
+        if (navbarComponent == null) navbarComponent = new NavbarComponent();
+        if (sidebarComponent == null) sidebarComponent = new SidebarComponent();
+
+        layoutWrapper.add(navbarComponent, BorderLayout.NORTH);
+        layoutWrapper.add(sidebarComponent, BorderLayout.WEST);
+        loadView(viewName);
+
+        mainFrame.revalidate();
+        mainFrame.repaint();
+    }
+
+    public static void hideLayoutWithNav() {
+        layoutWrapper.remove(navbarComponent);
+        layoutWrapper.remove(sidebarComponent);
+        navbarComponent = null;
+        sidebarComponent = null;
+        mainFrame.revalidate();
+        mainFrame.repaint();
+    }
+
 }

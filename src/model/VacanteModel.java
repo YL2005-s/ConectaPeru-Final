@@ -5,6 +5,8 @@ import model.repository.impl.VacanteRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class VacanteModel {
     private final List<Vacante> vacantes = new ArrayList<>();
@@ -30,5 +32,13 @@ public class VacanteModel {
             }
         }
         return resultado;
+    }
+
+    public List<String> getUniqueLocations() {
+        Set<String> ubicaciones = new TreeSet<>();
+        for (Vacante v : vacantes) {
+            ubicaciones.add(v.getUbicacion());
+        }
+        return new ArrayList<>(ubicaciones);
     }
 }

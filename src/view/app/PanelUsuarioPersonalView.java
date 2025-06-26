@@ -4,8 +4,6 @@ import config.Session;
 import core.Observer;
 import entities.UsuarioPersonal;
 import entities.Vacante;
-import view.component.NavbarComponent;
-import view.component.SidebarComponent;
 
 import java.util.List;
 import javax.swing.*;
@@ -14,135 +12,154 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 public class PanelUsuarioPersonalView extends JPanel implements Observer<Object> {
-    private final NavbarComponent navbar;
-    private final SidebarComponent sidebar;
-    private final JTextField tfBuscar;
-    private final JButton btnBuscar;
-    private final JPanel panelResultados;
-    private final JLabel lblBienvenida;
+    private final JTextField tf_search;
+    private final JComboBox<String> cb_location;
+    private final JButton btn_search;
+    private final JPanel panelResults;
+    private final JLabel lbl_welcome;
+    private Consumer<Vacante> applyListener;
 
     public PanelUsuarioPersonalView() {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        navbar = new NavbarComponent("Usuario");
-        add(navbar, BorderLayout.NORTH);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        sidebar = new SidebarComponent();
-        add(sidebar, BorderLayout.WEST);
+        lbl_welcome = new JLabel("Bienvenido, usuario");
+        lbl_welcome.setFont(new Font("SansSerif", Font.BOLD, 22));
+        lbl_welcome.setAlignmentX(CENTER_ALIGNMENT);
+        mainPanel.add(lbl_welcome);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // CONTENIDO PRINCIPAL
-        JPanel panelContenido = new JPanel();
-        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
-        panelContenido.setBackground(Color.WHITE);
-        panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
+        searchPanel.setMaximumSize(new Dimension(600, 40));
+        searchPanel.setBackground(Color.WHITE);
 
-        lblBienvenida = new JLabel("Bienvenido, usuario");
-        lblBienvenida.setFont(new Font("SansSerif", Font.BOLD, 22));
-        lblBienvenida.setAlignmentX(CENTER_ALIGNMENT);
-        panelContenido.add(lblBienvenida);
-        panelContenido.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        // BUSCADOR
-        JPanel panelBuscar = new JPanel(new BorderLayout(10, 5));
-        panelBuscar.setMaximumSize(new Dimension(600, 40));
-        panelBuscar.setBackground(Color.WHITE);
-        tfBuscar = new JTextField();
-        tfBuscar.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        tfBuscar.setBorder(BorderFactory.createCompoundBorder(
+        tf_search = new JTextField();
+        tf_search.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        tf_search.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(180, 180, 180), 1, true),
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
-        panelBuscar.add(tfBuscar, BorderLayout.CENTER);
+        searchPanel.add(tf_search);
+        searchPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-        btnBuscar = new JButton("Buscar");
-        btnBuscar.setFocusPainted(false);
-        btnBuscar.setBackground(new Color(244, 33, 46));
-        btnBuscar.setForeground(Color.WHITE);
-        btnBuscar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        panelBuscar.add(btnBuscar, BorderLayout.EAST);
+        cb_location = new JComboBox<>();
+        cb_location.setMaximumSize(new Dimension(160, 30));
+        searchPanel.add(cb_location);
+        searchPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-        panelContenido.add(panelBuscar);
-        panelContenido.add(Box.createRigidArea(new Dimension(0, 25)));
+        btn_search = new JButton("Buscar");
+        btn_search.setFocusPainted(false);
+        btn_search.setBackground(new Color(244, 33, 46));
+        btn_search.setForeground(Color.WHITE);
+        btn_search.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        searchPanel.add(btn_search);
 
-        // VACANTES
-        panelResultados = new JPanel();
-        panelResultados.setLayout(new BoxLayout(panelResultados, BoxLayout.Y_AXIS));
-        panelResultados.setBackground(Color.WHITE);
+        mainPanel.add(searchPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        JScrollPane scroll = new JScrollPane(panelResultados);
+        panelResults = new JPanel();
+        panelResults.setLayout(new BoxLayout(panelResults, BoxLayout.Y_AXIS));
+        panelResults.setBackground(Color.WHITE);
+
+        JScrollPane scroll = new JScrollPane(panelResults);
         scroll.setPreferredSize(new Dimension(800, 400));
         scroll.setBorder(null);
-        panelContenido.add(scroll);
+        mainPanel.add(scroll);
 
-        add(panelContenido, BorderLayout.CENTER);
+        add(mainPanel, BorderLayout.CENTER);
+
+        Session.get().addObserver(this);
     }
 
-    public void mostrarVacantes(List<Vacante> vacantes) {
-        panelResultados.removeAll();
+    public void setLocationOptions(List<String> locations) {
+        cb_location.removeAllItems();
+        cb_location.addItem("Todas");
+        for (String loc : locations) {
+            cb_location.addItem(loc);
+        }
+    }
 
-        if (vacantes.isEmpty()) {
-            JLabel vacio = new JLabel("No se encontraron vacantes.");
-            vacio.setFont(new Font("SansSerif", Font.ITALIC, 14));
-            vacio.setForeground(Color.GRAY);
-            vacio.setAlignmentX(CENTER_ALIGNMENT);
-            panelResultados.add(vacio);
+    public String getSelectedLocation() {
+        return (String) cb_location.getSelectedItem();
+    }
+
+    public void showVacant(List<Vacante> vacant, Consumer<Vacante> applyListener) {
+        this.applyListener = applyListener;
+        panelResults.removeAll();
+
+        if (vacant.isEmpty()) {
+            JLabel empty = new JLabel("No se encontraron vacantes.");
+            empty.setFont(new Font("SansSerif", Font.ITALIC, 14));
+            empty.setForeground(Color.GRAY);
+            empty.setAlignmentX(CENTER_ALIGNMENT);
+            panelResults.add(empty);
         } else {
-            for (Vacante v : vacantes) {
-                panelResultados.add(crearTarjetaVacante(v));
-                panelResultados.add(Box.createRigidArea(new Dimension(0, 10)));
+            for (Vacante v : vacant) {
+                panelResults.add(make_vacantCard(v));
+                panelResults.add(Box.createRigidArea(new Dimension(0, 10)));
             }
         }
 
-        panelResultados.revalidate();
-        panelResultados.repaint();
+        panelResults.revalidate();
+        panelResults.repaint();
     }
 
-    private JPanel crearTarjetaVacante(Vacante v) {
+    private JPanel make_vacantCard(Vacante v) {
         JPanel card = new JPanel(new BorderLayout());
+        card.setMaximumSize(new Dimension(600, 180));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(200, 200, 200), 1, true),
                 BorderFactory.createEmptyBorder(12, 15, 12, 15)
         ));
 
-        // Panel izquierdo (info)
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBackground(Color.WHITE);
 
-        JLabel lblTitulo = new JLabel("💼 " + v.getTitulo());
-        lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 16));
+        JLabel lbl_title = new JLabel("💼 " + v.getTitulo());
+        lbl_title.setFont(new Font("SansSerif", Font.BOLD, 16));
 
-        JLabel lblEmpresa = new JLabel("🏢 " + v.getIdEmpresa());
-        lblEmpresa.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        JLabel lbl_enterprise = new JLabel("🏢 " + v.getIdEmpresa());
+        lbl_enterprise.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-        JLabel lblUbicacion = new JLabel("📍 " + v.getUbicacion());
-        lblUbicacion.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        JLabel lbl_location = new JLabel("📍 " + v.getUbicacion());
+        lbl_location.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-        JLabel lblTipo = new JLabel("🗂 Tipo: " + (v.getModalidad() != null ? v.getModalidad() : "No especificado"));
-        lblTipo.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        JLabel lbl_type = new JLabel("🗂 Tipo: " + (v.getModalidad() != null ? v.getModalidad() : "No especificado"));
+        lbl_type.setFont(new Font("SansSerif", Font.PLAIN, 13));
 
-        JLabel lblFecha = new JLabel("📅 Publicado: " + (v.getFechaPublicacion() != null ? v.getFechaPublicacion().toString() : "N/A"));
-        lblFecha.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        JLabel lbl_date = new JLabel("📅 Publicado: " + (v.getFechaPublicacion() != null ? v.getFechaPublicacion().toString() : "N/A"));
+        lbl_date.setFont(new Font("SansSerif", Font.PLAIN, 13));
 
-        info.add(lblTitulo);
-        info.add(lblEmpresa);
-        info.add(lblUbicacion);
-        info.add(lblTipo);
-        info.add(lblFecha);
+        info.add(lbl_title);
+        info.add(lbl_enterprise);
+        info.add(lbl_location);
+        info.add(lbl_type);
+        info.add(lbl_date);
 
-        // Botón de postular
-        JButton btnAplicar = new JButton("📝 Postular");
-        btnAplicar.setBackground(new Color(30, 144, 255));
-        btnAplicar.setForeground(Color.WHITE);
-        btnAplicar.setFocusPainted(false);
-        btnAplicar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnAplicar.setPreferredSize(new Dimension(120, 35));
+        JButton btn_apply = new JButton("📝 Postular");
+        btn_apply.setBackground(new Color(30, 144, 255));
+        btn_apply.setForeground(Color.WHITE);
+        btn_apply.setFocusPainted(false);
+        btn_apply.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn_apply.setPreferredSize(new Dimension(120, 35));
+
+        btn_apply.addActionListener(e -> {
+            if (applyListener != null) {
+                applyListener.accept(v);
+            }
+        });
 
         JPanel panelBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         panelBtn.setBackground(Color.WHITE);
-        panelBtn.add(btnAplicar);
+        panelBtn.add(btn_apply);
 
         card.add(info, BorderLayout.CENTER);
         card.add(panelBtn, BorderLayout.SOUTH);
@@ -150,24 +167,14 @@ public class PanelUsuarioPersonalView extends JPanel implements Observer<Object>
         return card;
     }
 
-
-    public void setBuscarListener(Consumer<String> listener) {
-        btnBuscar.addActionListener(e -> listener.accept(tfBuscar.getText().trim()));
-    }
-
-    public NavbarComponent getNavbar() {
-        return navbar;
-    }
-
-    public SidebarComponent getSidebar() {
-        return sidebar;
+    public void setSearchListener(Consumer<String> listener) {
+        btn_search.addActionListener(e -> listener.accept(tf_search.getText().trim()));
     }
 
     @Override
     public void update(Object valor) {
         if (valor instanceof UsuarioPersonal up) {
-            lblBienvenida.setText("Bienvenido, " + up.getNombre());
-            navbar.setUsuario(up.getNombre() + " " + up.getApellido());
+            lbl_welcome.setText("Bienvenido, " + up.getNombre());
         }
     }
 }

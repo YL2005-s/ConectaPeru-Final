@@ -1,25 +1,28 @@
 package view.component;
 
+import config.Session;
+import core.Observer;
+import entities.UsuarioPersonal;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class NavbarComponent extends JPanel {
-
+public class NavbarComponent extends JPanel implements Observer<Object> {
     private final JLabel lbl_user;
     private final JButton btn_logout;
 
-    public NavbarComponent(String nombreUsuario) {
+    public NavbarComponent() {
         setLayout(new BorderLayout());
         setBackground(new Color(240, 240, 240));
         setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         setPreferredSize(new Dimension(1000, 60));
 
-        JLabel lblTitulo = new JLabel("ConectaPerú");
-        lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 18));
-        lblTitulo.setForeground(new Color(200, 40, 40));
-        add(lblTitulo, BorderLayout.WEST);
+        JLabel lbl_title = new JLabel("ConectaPerú");
+        lbl_title.setFont(new Font("SansSerif", Font.BOLD, 18));
+        lbl_title.setForeground(new Color(200, 40, 40));
+        add(lbl_title, BorderLayout.WEST);
 
-        lbl_user = new JLabel("👤 " + nombreUsuario);
+        lbl_user = new JLabel("👤 Usuario");
         lbl_user.setFont(new Font("SansSerif", Font.PLAIN, 14));
         lbl_user.setForeground(Color.DARK_GRAY);
 
@@ -35,13 +38,18 @@ public class NavbarComponent extends JPanel {
         rightPanel.add(btn_logout);
 
         add(rightPanel, BorderLayout.EAST);
+
+        Session.get().addObserver(this);
     }
 
     public JButton getBtn_logout() {
         return btn_logout;
     }
 
-    public void setUsuario(String nombre) {
-        lbl_user.setText("👤 " + nombre);
+    @Override
+    public void update(Object value) {
+        if (value instanceof UsuarioPersonal u) {
+            lbl_user.setText("👤 " + u.getNombre());
+        }
     }
 }

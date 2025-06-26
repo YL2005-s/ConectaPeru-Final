@@ -1,9 +1,13 @@
 package controller;
 
+import controller.auth.LoginController;
+import controller.auth.RegisterEnterpriseController;
+import controller.auth.RegisterPersonalController;
+import controller.component.NavBarController;
+import controller.component.SidebarController;
 import core.Controller;
-import model.UsuarioEmpresarialModel;
-import model.UsuarioPersonalModel;
-import model.VacanteModel;
+import model.*;
+import view.app.CursosUsuarioPersonalView;
 import view.app.PanelUsuarioPersonalView;
 import view.app.PerfilUsuarioPersonalView;
 import view.auth.LoginView;
@@ -14,30 +18,46 @@ public class MainController extends Controller {
     private final UsuarioPersonalModel usuarioPersonalModel = new UsuarioPersonalModel();
     private final UsuarioEmpresarialModel usuarioEmpresarialModel = new UsuarioEmpresarialModel();
     private final VacanteModel vacanteModel = new VacanteModel();
+    private final CapacitacionModel capacitacionModel = new CapacitacionModel();
+    private final PostulacionModel postulacionModel = new PostulacionModel();
 
     private final LoginController loginController = new LoginController(usuarioPersonalModel, usuarioEmpresarialModel);
     private final RegisterPersonalController registerPersonalController = new RegisterPersonalController(usuarioPersonalModel);
     private final RegisterEnterpriseController registerEnterpriseController = new RegisterEnterpriseController(usuarioEmpresarialModel);
-    private final PanelUsuarioPersonalController panelUsuarioPersonalController = new PanelUsuarioPersonalController(usuarioPersonalModel, vacanteModel);
+    //Panel
+    private final SidebarController sidebarController = new SidebarController(sidebarComponent);
+    private final NavBarController navBarController = new NavBarController(navbarComponent);
+    private final PanelUsuarioPersonalController panelUsuarioPersonalController = new PanelUsuarioPersonalController(vacanteModel, postulacionModel);
     private final PerfilUsuarioPersonalController perfilUsuarioPersonalController = new PerfilUsuarioPersonalController(usuarioPersonalModel);
+    private final CursosUsuarioPersonalController cursosUsuarioPersonalController = new CursosUsuarioPersonalController(capacitacionModel);
 
     @Override
     public void run() {
         usuarioPersonalModel.loadFromDB();
         usuarioEmpresarialModel.loadFromDB();
         vacanteModel.loadFromDB();
+        capacitacionModel.loadFromDB();
+        postulacionModel.loadFromDB();
 
         loginController.run();
         registerPersonalController.run();
         registerEnterpriseController.run();
+        //Panel
+        sidebarController.run();
+        navBarController.run();
         panelUsuarioPersonalController.run();
         perfilUsuarioPersonalController.run();
+        cursosUsuarioPersonalController.run();
 
+
+        //Auth
         addView("LoginView",getLoginView());
         addView("RegistroUsuarioPersonalView", getRegisterPersonalView());
         addView("RegistroUsuarioEmpresarialView", getRegisterEnterpriseView());
+        //Panel
         addView("PanelUsuarioPersonalView", getPanelUsuarioPersonalView());
-        addView("PerfilUsuarioPersonalComponent", getPerfilUsuarioPersonalView());
+        addView("PerfilUsuarioPersonalView", getPerfilUsuarioPersonalView());
+        addView("CursosUsuarioPersonalView", getCursosUsuarioPersonalView());
 
         mainFrame.setVisible(true);
     }
@@ -60,5 +80,9 @@ public class MainController extends Controller {
 
     public PerfilUsuarioPersonalView getPerfilUsuarioPersonalView() {
         return perfilUsuarioPersonalController.getView();
+    }
+
+    public CursosUsuarioPersonalView getCursosUsuarioPersonalView() {
+        return cursosUsuarioPersonalController.getView();
     }
 }
