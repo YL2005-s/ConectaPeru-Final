@@ -1,6 +1,8 @@
 package config;
 
-public class Session {
+import core.Observable;
+
+public class Session extends Observable<Object> {
     private static final Session instance = new Session();
     private Object currentUser;
 
@@ -12,14 +14,16 @@ public class Session {
 
     public void setUsuario(Object user) {
         this.currentUser = user;
-    }
-
-    public Object getUsuario() {
-        return currentUser;
+        notifyObserver(user);
     }
 
     public void clear() {
         this.currentUser = null;
+        notifyObserver(null);
+    }
+
+    public Object getUsuario() {
+        return currentUser;
     }
 
     public boolean isLoggedIn() {

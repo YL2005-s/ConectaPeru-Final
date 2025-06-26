@@ -37,23 +37,6 @@ public abstract class Repository<T> {
         }
     }
 
-    protected int executeUpdateWithKeys(String sql, StatementMapper mapper, ResultSetMapper<Integer> keyConsumer) {
-        try (PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            mapper.map(ps);
-            int rows = ps.executeUpdate();
-            if (rows > 0) {
-                try (ResultSet keys = ps.getGeneratedKeys()) {
-                    if (keys.next()) {
-                        keyConsumer.map(keys);
-                    }
-                }
-            }
-            return rows;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     protected <R> R executeQueryOne(String sql, StatementMapper mapper, ResultSetMapper<R> resultMapper) {
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             mapper.map(ps);

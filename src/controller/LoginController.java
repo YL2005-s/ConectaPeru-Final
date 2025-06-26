@@ -4,12 +4,12 @@ import config.Session;
 import core.Controller;
 import model.UsuarioEmpresarialModel;
 import model.UsuarioPersonalModel;
+import view.app.PanelUsuarioPersonalView;
 import view.auth.LoginView;
 
 import javax.swing.*;
 
 public class LoginController extends Controller {
-
     private LoginView loginView;
     private final UsuarioPersonalModel personalModel;
     private final UsuarioEmpresarialModel empresarialModel;
@@ -39,6 +39,7 @@ public class LoginController extends Controller {
             if (personalModel.validateLogin(dni, pass)) {
                 Session.get().setUsuario(personalModel.searchByDni(dni));
                 JOptionPane.showMessageDialog(null, "Bienvenido, candidato.");
+                loadView("PanelUsuarioPersonalView");
                 return;
             }
 
