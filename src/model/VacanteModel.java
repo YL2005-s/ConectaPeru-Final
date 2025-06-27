@@ -21,6 +21,10 @@ public class VacanteModel {
         return new ArrayList<>(vacantes);
     }
 
+    public boolean deleteById(int id) {
+        return repository.deleteById(id);
+    }
+
     public List<Vacante> searchByText(String text) {
         text = text.toLowerCase();
         List<Vacante> resultado = new ArrayList<>();

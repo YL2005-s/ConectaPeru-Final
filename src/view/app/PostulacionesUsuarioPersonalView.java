@@ -1,5 +1,6 @@
 package view.app;
 
+import core.Observer;
 import entities.Postulacion;
 
 import java.util.List;

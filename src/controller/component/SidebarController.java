@@ -37,7 +37,7 @@ public class SidebarController extends Controller {
     }
 
     private ActionListener goToConfig() {
-        return e -> showLayoutWithNav("ConfiguracionView");
+        return e -> showLayoutWithNav("PostulacionesUsuarioPersonalView");
     }
 
 }

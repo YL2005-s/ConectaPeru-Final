@@ -4,6 +4,7 @@ import entities.Postulacion;
 import entities.UsuarioPersonal;
 import entities.Vacante;
 import model.repository.impl.PostulacionRepository;
+import model.repository.impl.UsuarioPersonalRepository;
 
 import java.util.*;
 

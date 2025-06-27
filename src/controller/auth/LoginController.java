@@ -44,6 +44,7 @@ public class LoginController extends Controller {
 
             if (empresarialModel.validateLogin(dni, pass)) {
                 Session.get().setUsuario(empresarialModel.searchByDni(dni));
+                loadView("PanelUsuarioEmpresarialView");
                 JOptionPane.showMessageDialog(null, "Bienvenido, empresa.");
                 return;
             }

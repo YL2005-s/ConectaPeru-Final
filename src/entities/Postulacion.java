@@ -34,24 +34,71 @@ public class Postulacion {
         private LocalDate fechaPostulacion = LocalDate.now();
         private Estado estado = Estado.ENVIADO;
 
-        public Builder id(int id) { this.id = id; return this; }
-        public Builder idUsuario(int idUsuario) { this.idUsuario = idUsuario; return this; }
-        public Builder idVacante(int idVacante) { this.idVacante = idVacante; return this; }
-        public Builder usuario(UsuarioPersonal usuario) { this.usuario = usuario; return this; }
-        public Builder vacante(Vacante vacante) { this.vacante = vacante; return this; }
-        public Builder fechaPostulacion(LocalDate fechaPostulacion) { this.fechaPostulacion = fechaPostulacion; return this; }
-        public Builder estado(Estado estado) { this.estado = estado; return this; }
+        public Builder id(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder idUsuario(int idUsuario) {
+            this.idUsuario = idUsuario;
+            return this;
+        }
+
+        public Builder idVacante(int idVacante) {
+            this.idVacante = idVacante;
+            return this;
+        }
+
+        public Builder usuario(UsuarioPersonal usuario) {
+            this.usuario = usuario;
+            return this;
+        }
+
+        public Builder vacante(Vacante vacante) {
+            this.vacante = vacante;
+            return this;
+        }
+
+        public Builder fechaPostulacion(LocalDate fechaPostulacion) {
+            this.fechaPostulacion = fechaPostulacion;
+            return this;
+        }
+
+        public Builder estado(Estado estado) {
+            this.estado = estado;
+            return this;
+        }
 
         public Postulacion build() {
             return new Postulacion(this);
         }
     }
 
-    public int getId() { return id; }
-    public int getIdUsuario() { return idUsuario; }
-    public int getIdVacante() { return idVacante; }
-    public UsuarioPersonal getUsuario() { return usuario; }
-    public Vacante getVacante() { return vacante; }
-    public LocalDate getFechaPostulacion() { return fechaPostulacion; }
-    public Estado getEstado() { return estado; }
+    public int getId() {
+        return id;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public int getIdVacante() {
+        return idVacante;
+    }
+
+    public UsuarioPersonal getUsuario() {
+        return usuario;
+    }
+
+    public Vacante getVacante() {
+        return vacante;
+    }
+
+    public LocalDate getFechaPostulacion() {
+        return fechaPostulacion;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
 }
